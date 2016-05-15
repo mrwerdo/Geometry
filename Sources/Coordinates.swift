@@ -46,11 +46,11 @@ extension CGRect {
 // This avoids floating point error makes the code easier write.
 
 public struct Point {
-    var x: Int
-    var y: Int
+    public var x: Int
+    public var y: Int
     
-    init() { x = 0; y = 0 }
-    init(_ x: Int, _ y: Int) {
+    public init() { x = 0; y = 0 }
+    public init(_ x: Int, _ y: Int) {
         self.x = x
         self.y = y
     }
