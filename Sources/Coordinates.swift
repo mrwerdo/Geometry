@@ -17,9 +17,6 @@ public func *(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
 public func /(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return point_operator(lhs, rhs: rhs, op: /)
 }
-public func %(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-    return point_operator(lhs, rhs: rhs, op: %)
-}
 public func ==(lhs: CGPoint, rhs: CGPoint) -> Bool {
     return (lhs.x == rhs.x) && (lhs.y == rhs.y)
 }
