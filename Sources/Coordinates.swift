@@ -1,8 +1,8 @@
 import Foundation
 
 /// Merges the values of `lhs` and `rhs` by calling `op` on the members `x` and `y` of `Point`.
-private func point_operator(_ lhs: CGPoint, rhs: CGPoint, op: (lhs: CGFloat, rhs: CGFloat) -> CGFloat) -> CGPoint {
-    return CGPoint(x: op(lhs: lhs.x, rhs: rhs.x), y: op(lhs: lhs.y, rhs: rhs.y))
+private func point_operator(_ lhs: CGPoint, rhs: CGPoint, op: (_ lhs: CGFloat, _ rhs: CGFloat) -> CGFloat) -> CGPoint {
+    return CGPoint(x: op(lhs.x, rhs.x), y: op(lhs.y, rhs.y))
 }
 
 public func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
@@ -22,8 +22,8 @@ public func ==(lhs: CGPoint, rhs: CGPoint) -> Bool {
 }
 
 /// Merges the values of `lhs` and `rhs` by calling `op` on the members `width` and `height` of `Size`.
-private func size_operator(_ lhs: CGSize, rhs: CGSize, op: (lhs: CGFloat, rhs: CGFloat) -> CGFloat) -> CGSize {
-    return CGSize(width: op(lhs: lhs.width, rhs: rhs.width), height: op(lhs: lhs.height, rhs: rhs.height))
+private func size_operator(_ lhs: CGSize, rhs: CGSize, op: (_ lhs: CGFloat, _ rhs: CGFloat) -> CGFloat) -> CGSize {
+    return CGSize(width: op(lhs.width, rhs.width), height: op(lhs.height, rhs.height))
 }
 
 public func +(lhs: CGSize, rhs: CGSize) -> CGSize {
@@ -57,8 +57,8 @@ public struct Point {
 }
 
 /// Merges the values of `lhs` and `rhs` by calling `op` on the members `x` and `y` of `Point`.
-private func point_operator(_ lhs: Point, rhs: Point, op: (lhs: Int, rhs: Int) -> Int) -> Point {
-    return Point(op(lhs: lhs.x, rhs: rhs.x), op(lhs: lhs.y, rhs: rhs.y))
+private func point_operator(_ lhs: Point, rhs: Point, op: (_ lhs: Int, _ rhs: Int) -> Int) -> Point {
+    return Point(op(lhs.x, rhs.x), op(lhs.y, rhs.y))
 }
 
 public func +(lhs: Point, rhs: Point) -> Point {
@@ -92,8 +92,8 @@ public struct Size {
 }
 
 /// Merges the values of `lhs` and `rhs` by calling `op` on the members `width` and `height` of `Size`.
-private func size_operator(_ lhs: Size, rhs: Size, op: (lhs: Int, rhs: Int) -> Int) -> Size {
-    return Size(op(lhs: lhs.width, rhs: rhs.width), op(lhs: lhs.height, rhs: rhs.height))
+private func size_operator(_ lhs: Size, rhs: Size, op: (_ lhs: Int, _ rhs: Int) -> Int) -> Size {
+    return Size(op(lhs.width, rhs.width), op(lhs.height, rhs.height))
 }
 
 public func +(lhs: Size, rhs: Size) -> Size {
