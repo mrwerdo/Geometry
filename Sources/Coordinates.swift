@@ -5,7 +5,13 @@ public protocol Countable : Equatable, Comparable {
     static prefix func -(n: Self) -> Self
     static func *=(a: inout Self, b: Self)
     static func /=(a: inout Self, b: Self)
+    
+    static func +(a: Self, b: Self) -> Self
+    static func -(a: Self, b: Self) -> Self
+    static func *(a: Self, b: Self) -> Self
+    static func /(a: Self, b: Self) -> Self
 }
+
 public extension Countable {
     static func +(a: Self, b: Self) -> Self {
         var sum = a
@@ -85,6 +91,8 @@ public protocol CoordinateIn3Dimensions : CoordinateIn2Dimensions {
     var z: Measure { get set }
 }
 
+// Note:    The operators in this extension must overload the operators in the
+//          extension `CoordinateIn2Dimensions` above.
 public extension CoordinateIn3Dimensions {
     public var distanceFromOrigin: Measure {
         return x*x + y*y + z*z
@@ -130,53 +138,12 @@ public extension CoordinateIn3Dimensions {
 }
 
 
-extension Int : Countable { }
-extension CGFloat : Countable { }
-extension CGPoint : CoordinateIn2Dimensions { }
-
-// TODO: This may prove to be a useless rule for defining inequalities.
-// Consider this:
-//      let a = CGPoint(x: 100, y: 10)
-//      let b = CGPoint(x: 0, y: 11)
-// then a < b is false, which seems odd.
-public func <(a: CGPoint, b: CGPoint) -> Bool {
-    return a.x < b.x && a.y < b.y
-}
-
-public struct Point : CoordinateIn2Dimensions {
-    /// Returns a Boolean value indicating whether the two points are equal.
-    ///
-    /// Equality is the inverse of inequality. For any points `a` and `b`,
-    /// `a == b` implies that `a != b` is `false`.
-    ///
-    /// - Parameters:
-    ///   - a: A point to compare.
-    ///   - b: Another point to compare.
-    public static func ==(a: Point, b: Point) -> Bool {
-        return b.x == b.x && a.y == b.y
-    }
-
-    public var x: Int
-    public var y: Int
-    
-    public init() {
-        x = 0
-        y = 0
-    }
-    
-    public init(_ x: Int, _ y: Int) {
-        self.x = x
-        self.y = y
-    }
-}
-
-// MARK: - Areas
-
 public protocol CountableArea : Comparable {
     associatedtype Measure: Countable
     
     var width: Measure { get set }
     var height: Measure { get set }
+    var area: Measure { get }
 }
 
 public extension CountableArea {
@@ -184,32 +151,46 @@ public extension CountableArea {
         return width * height
     }
     
+    static func ==(a: Self, b: Self) -> Bool {
+        return a.width == b.width && a.height == b.height
+    }
+    
     static func <(a: Self, b: Self) -> Bool {
         return a.area < b.area
     }
-}
-
-public struct Size : CountableArea {
-
-    public var width: Int
-    public var height: Int
     
-    public init() { width = 0; height = 0 }
-    public init(_ width: Int, _ height: Int) {
-        self.width = width
-        self.height = height
+    static func >(a: Self, b: Self) -> Bool {
+        return a.area > b.area
     }
 }
 
-public func ==(lhs: Size, rhs: Size) -> Bool {
-    return (lhs.width == rhs.width) && (lhs.height == rhs.height)
-}
+// -----------------------------------------------------------------------------
+// MARK: - Countable Protocol Conformance
+// -----------------------------------------------------------------------------
 
-extension CGSize : CountableArea {
-    public var area: CGFloat {
-        return width * height
+extension Int : Countable { }
+extension CGFloat : Countable { }
+
+// -----------------------------------------------------------------------------
+// MARK: - Coordinate Protocol Conformance
+// -----------------------------------------------------------------------------
+
+extension CGPoint : CoordinateIn2Dimensions { }
+
+extension CGVector : CoordinateIn2Dimensions {
+    public var x: CGFloat {
+        get { return dx }
+        set { dx = newValue }
+    }
+    
+    public var y: CGFloat {
+        get { return dy }
+        set { dy = newValue }
     }
 }
+
+extension CGSize : CountableArea { }
+
 extension CGRect {
     var center: CGPoint {
         return CGPoint(x: width / 2, y: height / 2) + origin
