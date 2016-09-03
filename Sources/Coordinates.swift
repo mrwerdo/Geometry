@@ -1,107 +1,198 @@
 import Foundation
 
-/// Merges the values of `lhs` and `rhs` by calling `op` on the members `x` and `y` of `Point`.
-private func point_operator(_ lhs: CGPoint, rhs: CGPoint, op: (lhs: CGFloat, rhs: CGFloat) -> CGFloat) -> CGPoint {
-    return CGPoint(x: op(lhs: lhs.x, rhs: rhs.x), y: op(lhs: lhs.y, rhs: rhs.y))
+public protocol Countable : Equatable, Comparable {
+    static func +=(a: inout Self, b: Self)
+    static prefix func -(n: Self) -> Self
+    static func *=(a: inout Self, b: Self)
+    static func /=(a: inout Self, b: Self)
+    
+    static func +(a: Self, b: Self) -> Self
+    static func -(a: Self, b: Self) -> Self
+    static func *(a: Self, b: Self) -> Self
+    static func /(a: Self, b: Self) -> Self
 }
 
-public func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-    return point_operator(lhs, rhs: rhs, op: +)
-}
-public func -(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-    return point_operator(lhs, rhs: rhs, op: -)
-}
-public func *(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-    return point_operator(lhs, rhs: rhs, op: *)
-}
-public func /(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-    return point_operator(lhs, rhs: rhs, op: /)
-}
-public func ==(lhs: CGPoint, rhs: CGPoint) -> Bool {
-    return (lhs.x == rhs.x) && (lhs.y == rhs.y)
+public extension Countable {
+    static func +(a: Self, b: Self) -> Self {
+        var sum = a
+        sum += b
+        return sum
+    }
+    
+    static func -(a: Self, b: Self) -> Self {
+        var sum = a
+        sum += -b
+        return sum
+    }
+    
+    static func *(a: Self, b: Self) -> Self {
+        var sum = a
+        sum *= b
+        return sum
+    }
+    
+    static func /(a: Self, b: Self) -> Self {
+        var sum = a
+        sum /= b
+        return sum
+    }
 }
 
-/// Merges the values of `lhs` and `rhs` by calling `op` on the members `width` and `height` of `Size`.
-private func size_operator(_ lhs: CGSize, rhs: CGSize, op: (lhs: CGFloat, rhs: CGFloat) -> CGFloat) -> CGSize {
-    return CGSize(width: op(lhs: lhs.width, rhs: rhs.width), height: op(lhs: lhs.height, rhs: rhs.height))
+public protocol CoordinateIn2Dimensions : Countable {
+    associatedtype Measure : Countable
+    
+    var x: Measure { get set }
+    var y: Measure { get set }
+    var distanceFromOrigin: Measure { get }
 }
 
-public func +(lhs: CGSize, rhs: CGSize) -> CGSize {
-    return size_operator(lhs, rhs: rhs, op: +)
+public extension CoordinateIn2Dimensions {
+    public var distanceFromOrigin: Measure {
+        return x*x + y*y
+    }
+    
+    static func +=(a: inout Self, b: Self) {
+        a.x += b.x
+        a.y += b.y
+    }
+    
+    static prefix func -(n: Self) -> Self {
+        var r = n
+        r.x = -n.x
+        r.y = -n.y
+        return r
+    }
+    
+    static func *=(a: inout Self, b: Self) {
+        a.x *= b.x
+        a.y *= b.y
+    }
+    
+    static func /=(a: inout Self, b: Self) {
+        a.x /= b.x
+        a.y /= b.y
+    }
+    
+    // TODO: Provide faster methods of the non-mutating countable operators.
+    static func <(a: Self, b: Self) -> Bool {
+        return a.distanceFromOrigin < b.distanceFromOrigin
+    }
+    
+    static func ==(a: Self, b: Self) -> Bool {
+        return a.x == b.x && a.y == b.y
+    }
+    
+    static func >(a: Self, b: Self) -> Bool {
+        return a.distanceFromOrigin > b.distanceFromOrigin
+    }
 }
-public func -(lhs: CGSize, rhs: CGSize) -> CGSize {
-    return size_operator(lhs, rhs: rhs, op: -)
+
+public protocol CoordinateIn3Dimensions : CoordinateIn2Dimensions {
+    var z: Measure { get set }
 }
-public func ==(lhs: CGSize, rhs: CGSize) -> Bool {
-    return (lhs.width == rhs.width) && (lhs.height == rhs.height)
+
+// Note:    The operators in this extension must overload the operators in the
+//          extension `CoordinateIn2Dimensions` above.
+public extension CoordinateIn3Dimensions {
+    public var distanceFromOrigin: Measure {
+        return x*x + y*y + z*z
+    }
+    
+    static func +=(a: inout Self, b: Self) {
+        a.x += b.x
+        a.y += b.y
+        a.z += b.z
+    }
+    
+    static prefix func -(n: Self) -> Self {
+        var r = n
+        r.x = -n.x
+        r.y = -n.y
+        r.z = -n.z
+        return r
+    }
+    
+    static func *=(a: inout Self, b: Self) {
+        a.x *= b.x
+        a.y *= b.y
+        a.z *= b.z
+    }
+    
+    static func /=(a: inout Self, b: Self) {
+        a.x /= b.x
+        a.y /= b.y
+        a.z /= b.z
+    }
+    
+    static func <(a: Self, b: Self) -> Bool {
+        return a.distanceFromOrigin < b.distanceFromOrigin
+    }
+    
+    static func ==(a: Self, b: Self) -> Bool {
+        return a.x == b.x && a.y == b.y && a.z == b.z
+    }
+    
+    static func >(a: Self, b: Self) -> Bool {
+        return a.distanceFromOrigin > b.distanceFromOrigin
+    }
 }
+
+
+public protocol CountableArea : Comparable {
+    associatedtype Measure: Countable
+    
+    var width: Measure { get set }
+    var height: Measure { get set }
+    var area: Measure { get }
+}
+
+public extension CountableArea {
+    var area: Measure {
+        return width * height
+    }
+    
+    static func ==(a: Self, b: Self) -> Bool {
+        return a.width == b.width && a.height == b.height
+    }
+    
+    static func <(a: Self, b: Self) -> Bool {
+        return a.area < b.area
+    }
+    
+    static func >(a: Self, b: Self) -> Bool {
+        return a.area > b.area
+    }
+}
+
+// -----------------------------------------------------------------------------
+// MARK: - Countable Protocol Conformance
+// -----------------------------------------------------------------------------
+
+extension Int : Countable { }
+extension CGFloat : Countable { }
+
+// -----------------------------------------------------------------------------
+// MARK: - Coordinate Protocol Conformance
+// -----------------------------------------------------------------------------
+
+extension CGPoint : CoordinateIn2Dimensions { }
+
+extension CGVector : CoordinateIn2Dimensions {
+    public var x: CGFloat {
+        get { return dx }
+        set { dx = newValue }
+    }
+    
+    public var y: CGFloat {
+        get { return dy }
+        set { dy = newValue }
+    }
+}
+
+extension CGSize : CountableArea { }
 
 extension CGRect {
     var center: CGPoint {
-        return CGPoint(x: width / 2.0, y: height / 2.0) + origin
+        return CGPoint(x: width / 2, y: height / 2) + origin
     }
-}
-
-// These structures use integers rather than the core graphics equivelant.
-// This avoids floating point error makes the code easier write.
-
-public struct Point {
-    public var x: Int
-    public var y: Int
-    
-    public init() { x = 0; y = 0 }
-    public init(_ x: Int, _ y: Int) {
-        self.x = x
-        self.y = y
-    }
-}
-
-/// Merges the values of `lhs` and `rhs` by calling `op` on the members `x` and `y` of `Point`.
-private func point_operator(_ lhs: Point, rhs: Point, op: (lhs: Int, rhs: Int) -> Int) -> Point {
-    return Point(op(lhs: lhs.x, rhs: rhs.x), op(lhs: lhs.y, rhs: rhs.y))
-}
-
-public func +(lhs: Point, rhs: Point) -> Point {
-    return point_operator(lhs, rhs: rhs, op: +)
-}
-public func -(lhs: Point, rhs: Point) -> Point {
-    return point_operator(lhs, rhs: rhs, op: -)
-}
-public func *(lhs: Point, rhs: Point) -> Point {
-    return point_operator(lhs, rhs: rhs, op: *)
-}
-public func /(lhs: Point, rhs: Point) -> Point {
-    return point_operator(lhs, rhs: rhs, op: /)
-}
-public func %(lhs: Point, rhs: Point) -> Point {
-    return point_operator(lhs, rhs: rhs, op: %)
-}
-func ==(lhs: Point, rhs: Point) -> Bool {
-    return (lhs.x == rhs.x) && (lhs.y == rhs.y)
-}
-
-public struct Size {
-    public var width: Int
-    public var height: Int
-    
-    public init() { width = 0; height = 0 }
-    public init(_ width: Int, _ height: Int) {
-        self.width = width
-        self.height = height
-    }
-}
-
-/// Merges the values of `lhs` and `rhs` by calling `op` on the members `width` and `height` of `Size`.
-private func size_operator(_ lhs: Size, rhs: Size, op: (lhs: Int, rhs: Int) -> Int) -> Size {
-    return Size(op(lhs: lhs.width, rhs: rhs.width), op(lhs: lhs.height, rhs: rhs.height))
-}
-
-public func +(lhs: Size, rhs: Size) -> Size {
-    return size_operator(lhs, rhs: rhs, op: +)
-}
-public func -(lhs: Size, rhs: Size) -> Size {
-    return size_operator(lhs, rhs: rhs, op: -)
-}
-public func ==(lhs: Size, rhs: Size) -> Bool {
-    return (lhs.width == rhs.width) && (lhs.height == rhs.height)
 }
