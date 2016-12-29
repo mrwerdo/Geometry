@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Countable : Equatable, Comparable {
+public protocol Countable : Equatable, Comparable, Hashable {
     static func +=(a: inout Self, b: Self)
     static prefix func -(n: Self) -> Self
     static func *=(a: inout Self, b: Self)
@@ -13,6 +13,11 @@ public protocol Countable : Equatable, Comparable {
 }
 
 public extension Countable {
+    
+    static func -=(a: inout Self, b: Self) {
+        a = a - b
+    }
+    
     static func +(a: Self, b: Self) -> Self {
         var sum = a
         sum += b
@@ -47,6 +52,13 @@ public protocol CoordinateIn2Dimensions : Countable {
 }
 
 public extension CoordinateIn2Dimensions {
+    
+    public var hashValue: Int {
+        let a = x.hashValue
+        let b = y.hashValue
+        return a ^ b + (b ^ a << 16)
+    }
+    
     public var distanceFromOrigin: Measure {
         return x*x + y*y
     }
@@ -94,8 +106,23 @@ public protocol CoordinateIn3Dimensions : CoordinateIn2Dimensions {
 // Note:    The operators in this extension must overload the operators in the
 //          extension `CoordinateIn2Dimensions` above.
 public extension CoordinateIn3Dimensions {
+    
+    public var hashValue: Int {
+        let a = x.hashValue
+        let b = y.hashValue
+        let c = z.hashValue
+        
+        return a ^ b + (b ^ c << 16) + (a ^ c << 32)
+    }
+    
     public var distanceFromOrigin: Measure {
-        return x*x + y*y + z*z
+        let a: Measure = x * x
+        let b: Measure = y * y
+        let c: Measure = z * z
+        return a + b + c
+        
+        // This was causing slower complie times.
+        // return x*x + y*y + z*z
     }
     
     static func +=(a: inout Self, b: Self) {
@@ -110,6 +137,12 @@ public extension CoordinateIn3Dimensions {
         r.y = -n.y
         r.z = -n.z
         return r
+    }
+    
+    static func -=(a: inout Self, b: Self) {
+        a.x -= b.x
+        a.y -= b.y
+        a.z -= b.z
     }
     
     static func *=(a: inout Self, b: Self) {
@@ -164,6 +197,56 @@ public extension CountableArea {
     }
 }
 
+public extension CountableArea where Measure == Int {
+    func iterateCoordinates(apply: (Point2D) -> ()) {
+        for x in 0..<width {
+            for y in 0..<height {
+                apply(Point2D(x: x, y: y))
+            }
+        }
+    }
+}
+
+
+public protocol CountableVolume : Comparable {
+    associatedtype Measure: Countable
+    
+    var width: Measure { get set }
+    var height: Measure { get set }
+    var breadth: Measure { get set }
+    var volume: Measure { get }
+}
+
+public extension CountableVolume {
+    var volume: Measure {
+        return width * height * breadth
+    }
+    
+    static func ==(a: Self, b: Self) -> Bool {
+        return a.width == b.width && a.height == b.height && a.breadth == b.breadth
+    }
+    
+    static func <(a: Self, b: Self) -> Bool {
+        return a.volume < b.volume
+    }
+    
+    static func >(a: Self, b: Self) -> Bool {
+        return a.volume > b.volume
+    }
+}
+
+public extension CountableVolume where Measure == Int {
+    func iterateCoordinates(apply: (Point3D) throws -> ()) rethrows {
+        for x in 0..<width {
+            for y in 0..<height {
+                for z in 0..<breadth {
+                    try apply(Point3D(x: x, y: y, z: z))
+                }
+            }
+        }
+    }
+}
+
 // -----------------------------------------------------------------------------
 // MARK: - Countable Protocol Conformance
 // -----------------------------------------------------------------------------
@@ -193,6 +276,21 @@ extension CGSize : CountableArea { }
 
 extension CGRect {
     var center: CGPoint {
-        return CGPoint(x: width / 2, y: height / 2) + origin
+        get {
+            return CGPoint(x: width / 2, y: height / 2) + origin
+        }
+        set {
+            let k = CGPoint(x: width / 2, y: height / 2)
+            origin = newValue - k
+        }
+    }
+    
+    var corners: [CGPoint] {
+        let a = origin
+        let b = origin + CGPoint(x: size.width, y: 0)
+        let c = origin + CGPoint(x: 0, y: size.height)
+        let d = origin + CGPoint(x: size.width, y: size.height)
+        
+        return [a, b, c, d]
     }
 }
