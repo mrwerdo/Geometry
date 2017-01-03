@@ -247,6 +247,12 @@ public extension CountableVolume where Measure == Int {
     }
 }
 
+#if os(macOS)
+    import AppKit
+#elseif os(iOS)
+    import UIKit
+#endif
+
 // -----------------------------------------------------------------------------
 // MARK: - Countable Protocol Conformance
 // -----------------------------------------------------------------------------
