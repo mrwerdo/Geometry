@@ -171,7 +171,7 @@ public extension CoordinateIn3Dimensions {
 }
 
 
-public protocol CountableArea : Comparable {
+public protocol CountableArea : Comparable, Countable {
     associatedtype Measure: Countable
     
     var width: Measure { get set }
@@ -180,6 +180,12 @@ public protocol CountableArea : Comparable {
 }
 
 public extension CountableArea {
+    public var hashValue: Int {
+        let a = width.hashValue
+        let b = height.hashValue
+        return a ^ b + (b ^ a << 16)
+    }
+    
     var area: Measure {
         return width * height
     }
@@ -195,6 +201,26 @@ public extension CountableArea {
     static func >(a: Self, b: Self) -> Bool {
         return a.area > b.area
     }
+    
+    static func +=(a: inout Self, b: Self) {
+        a.width += b.width
+        a.height += b.height
+    }
+    static prefix func -(a: Self) -> Self {
+        var r = a
+        r.width = -a.width
+        r.height = -a.height
+        return r
+    }
+    static func *=(a: inout Self, b: Self) {
+        a.width *= b.width
+        a.height *= b.height
+    }
+    static func /=(a: inout Self, b: Self) {
+        a.width /= b.width
+        a.height /= b.height
+    }
+    
 }
 
 public extension CountableArea where Measure == Int {
