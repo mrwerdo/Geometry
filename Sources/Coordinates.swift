@@ -248,21 +248,21 @@ public extension CountableVolume {
         return width * height * breadth
     }
     
-    static func ==(a: Self, b: Self) -> Bool {
+    public static func ==(a: Self, b: Self) -> Bool {
         return a.width == b.width && a.height == b.height && a.breadth == b.breadth
     }
     
-    static func <(a: Self, b: Self) -> Bool {
+    public static func <(a: Self, b: Self) -> Bool {
         return a.volume < b.volume
     }
     
-    static func >(a: Self, b: Self) -> Bool {
+    public static func >(a: Self, b: Self) -> Bool {
         return a.volume > b.volume
     }
 }
 
 public extension CountableVolume where Measure == Int {
-    func iterateCoordinates(apply: (Point3D) throws -> ()) rethrows {
+    public func iterateCoordinates(apply: (Point3D) throws -> ()) rethrows {
         for x in 0..<width {
             for y in 0..<height {
                 for z in 0..<breadth {
@@ -307,7 +307,7 @@ extension CGVector : CoordinateIn2Dimensions {
 extension CGSize : CountableArea { }
 
 extension CGRect {
-    var center: CGPoint {
+    public var center: CGPoint {
         get {
             return CGPoint(x: width / 2, y: height / 2) + origin
         }
@@ -317,7 +317,7 @@ extension CGRect {
         }
     }
     
-    var corners: [CGPoint] {
+    public var corners: [CGPoint] {
         let a = origin
         let b = origin + CGPoint(x: size.width, y: 0)
         let c = origin + CGPoint(x: 0, y: size.height)
