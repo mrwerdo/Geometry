@@ -290,7 +290,14 @@ extension CGFloat : Countable { }
 // MARK: - Coordinate Protocol Conformance
 // -----------------------------------------------------------------------------
 
-extension CGPoint : CoordinateIn2Dimensions { }
+extension CGPoint : CoordinateIn2Dimensions {
+    init(x: CGFloat) {
+        self.init(x: x, y: 0)
+    }
+    init(y: CGFloat) {
+        self.init(x: 0, y: y)
+    }
+}
 
 extension CGVector : CoordinateIn2Dimensions {
     public var x: CGFloat {
