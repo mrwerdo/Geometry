@@ -311,7 +311,12 @@ extension CGVector : CoordinateIn2Dimensions {
     }
 }
 
-extension CGSize : CountableArea { }
+extension CGSize : CountableArea {
+    init(square: CGFloat) {
+        width = square
+        height = square
+    }
+}
 
 extension CGRect {
     public var center: CGPoint {
