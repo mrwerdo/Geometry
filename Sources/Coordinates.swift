@@ -297,6 +297,11 @@ extension CGPoint : CoordinateIn2Dimensions {
     init(y: CGFloat) {
         self.init(x: 0, y: y)
     }
+    
+    init(_ size: CGSize) {
+        self.x = size.width
+        self.y = size.height
+    }
 }
 
 extension CGVector : CoordinateIn2Dimensions {
