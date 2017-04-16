@@ -291,14 +291,14 @@ extension CGFloat : Countable { }
 // -----------------------------------------------------------------------------
 
 extension CGPoint : CoordinateIn2Dimensions {
-    init(x: CGFloat) {
+    public init(x: CGFloat) {
         self.init(x: x, y: 0)
     }
-    init(y: CGFloat) {
+    public init(y: CGFloat) {
         self.init(x: 0, y: y)
     }
     
-    init(_ size: CGSize) {
+    public init(_ size: CGSize) {
         self.x = size.width
         self.y = size.height
     }

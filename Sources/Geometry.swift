@@ -11,7 +11,7 @@ public struct Point2D : CoordinateIn2Dimensions {
         y = 0
     }
     
-    public init(x: Int, y: Int) {
+    public init(x: Int = 0, y: Int = 0) {
         self.x = x
         self.y = y
     }
