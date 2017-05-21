@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Countable : Equatable, Comparable, Hashable {
+public protocol Countable : Comparable, Hashable {
     static func +=(a: inout Self, b: Self)
     static prefix func -(n: Self) -> Self
     static func *=(a: inout Self, b: Self)
@@ -171,7 +171,7 @@ public extension CoordinateIn3Dimensions {
 }
 
 
-public protocol CountableArea : Comparable, Countable {
+public protocol CountableArea : Countable {
     associatedtype Measure: Countable
     
     var width: Measure { get set }
