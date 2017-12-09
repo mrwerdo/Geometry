@@ -10,7 +10,7 @@ class GeometryTests: XCTestCase {
 
 }
 extension GeometryTests {
-	static var allTests : [(String, GeometryTests -> () throws -> Void)] {
+	static var allTests : [(String, (GeometryTests) -> () throws -> Void)] {
 		return [
 			("testExample", testExample),
 		]
