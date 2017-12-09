@@ -14,8 +14,20 @@ public protocol Countable : Comparable, Hashable {
 
 public extension Countable {
     
+    static func +=(a: inout Self, b: Self) {
+        a = a + b
+    }
+    
     static func -=(a: inout Self, b: Self) {
         a = a - b
+    }
+    
+    static func *=(a: inout Self, b: Self) {
+        a = a * b
+    }
+    
+    static func /=(a: inout Self, b: Self) {
+        a = a / b
     }
     
     static func +(a: Self, b: Self) -> Self {
@@ -96,6 +108,48 @@ public extension CoordinateIn2Dimensions {
     
     static func >(a: Self, b: Self) -> Bool {
         return a.distanceFromOrigin > b.distanceFromOrigin
+    }
+    
+    static func *=(a: inout Self, b: Measure) {
+        a.x *= b
+        a.y *= b
+    }
+    
+    static func +=(a: inout Self, b: Measure)  {
+        a.x += b
+        a.y += b
+    }
+    static func -=(a: inout Self, b: Measure) {
+        a.x -= b
+        a.y -= b
+    }
+    static func /=(a: inout Self, b: Measure) {
+        a.x /= b
+        a.y /= b
+    }
+    
+    static func *(a: Self, b: Measure) -> Self {
+        var i = a
+        i *= b
+        return i
+    }
+    
+    static func *(a: Measure, b: Self) -> Self {
+        var i = b
+        i *= a
+        return i
+    }
+    
+    static func /(a: Self, b: Measure) -> Self {
+        var i = a
+        i /= b
+        return i
+    }
+    
+    static func /(a: Measure, b: Self) -> Self {
+        var i = b
+        i /= a
+        return i
     }
 }
 
@@ -290,6 +344,20 @@ extension CGFloat : Countable { }
 // MARK: - Coordinate Protocol Conformance
 // -----------------------------------------------------------------------------
 
+extension CGPoint {
+    func heading(to point: CGPoint) -> CGFloat {
+        let difference = point - self
+        return atan2(difference.y, difference.x)
+    }
+    
+    func vector(headingTo point: CGPoint, speed: CGFloat) -> CGVector {
+        let difference = point - self
+        let theta = atan2(difference.y, difference.x)
+        return CGVector(dx: speed * cos(theta), dy: speed * sin(theta))
+    }
+}
+
+
 extension CGPoint : CoordinateIn2Dimensions {
     public init(x: CGFloat) {
         self.init(x: x, y: 0)
@@ -304,6 +372,19 @@ extension CGPoint : CoordinateIn2Dimensions {
     }
 }
 
+extension CGPoint {
+    
+    init(_ v: CGVector) {
+        x = v.dx
+        y = v.dy
+    }
+    
+    func distance(to p: CGPoint) -> CGFloat {
+        return sqrt((p - self).distanceFromOrigin)
+    }
+}
+
+
 extension CGVector : CoordinateIn2Dimensions {
     public var x: CGFloat {
         get { return dx }
@@ -314,12 +395,41 @@ extension CGVector : CoordinateIn2Dimensions {
         get { return dy }
         set { dy = newValue }
     }
+    
+    static func *(lhs: CGVector, rhs: CGFloat) -> CGVector {
+        return CGVector(dx: lhs.dx * rhs, dy: lhs.dy * rhs)
+    }
+    
+    static func *(lhs: CGFloat, rhs: CGVector) -> CGVector {
+        return CGVector(dx: rhs.dx * lhs, dy: rhs.dy * lhs)
+    }
 }
 
 extension CGSize : CountableArea {
-    init(square: CGFloat) {
+    public init(square: CGFloat) {
         width = square
         height = square
+    }
+    
+    private init(_ dx: CGFloat = 0, _ dy: CGFloat = 0) {
+        self.width = dx
+        self.height = dy
+    }
+    
+    static func *(lhs: CGSize, rhs: CGFloat) -> CGSize {
+        return CGSize(lhs.width * rhs,lhs.height * rhs)
+    }
+    
+    static func *(lhs: CGFloat, rhs: CGSize) -> CGSize {
+        return CGSize(rhs.width * lhs, rhs.height * lhs)
+    }
+    
+    static func /(lhs: CGFloat, rhs: CGSize) -> CGSize {
+        return CGSize(rhs.width / lhs, rhs.height / lhs)
+    }
+    
+    static func /(lhs: CGSize, rhs: CGFloat) -> CGSize {
+        return CGSize(lhs.width / rhs, lhs.height / rhs)
     }
 }
 
