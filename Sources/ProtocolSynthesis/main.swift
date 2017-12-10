@@ -55,10 +55,10 @@ struct CodeGenerator {
         
         let args = components
             .map { arg in "lhs.\(arg) \(op) rhs.\(arg)" }
-            .joined(separator: ",\n\(k)")
+            .joined(separator: "\n\(k)")
         
         let code = "" +
-            "\(access) static func \(op)(lhs: inout \(type), rhs: \(type)) -> \(type) {" ¬
+            "\(access) static func \(op)(lhs: inout \(type), rhs: \(type)) {" ¬
             "    \(args)" ¬
             "}"
         
@@ -88,7 +88,7 @@ struct CodeGenerator {
             .joined(separator: ",\n\(k)")
         
         let code = "" +
-            "\(access) static func \(op)(arg: \(type)) -> \(type) {" ¬
+            "\(access) static prefix func \(op)(arg: \(type)) -> \(type) {" ¬
             "    return \(type)(" ¬
             "        \(args)" ¬
             "    )" ¬
@@ -102,7 +102,9 @@ class SynthesisCommand: Command {
     let name = "operators"
     let indent = Key<Int>("-i", "--indent")
     let access = Key<Access>("-a", "--access")
-
+    let componentType = Key<String>("-t", "--componentType")
+    let emitType = Flag("--emitType")
+    
     let type = Parameter()
     let components = CollectedParameter()
     
@@ -110,26 +112,41 @@ class SynthesisCommand: Command {
         let indent = self.indent.value ?? 4
         let access = self.access.value ?? .public
         
+        if emitType.value {
+            let ctype = componentType.value ?? "Int"
+            let spaces = String(repeating: " ", count: 4)
+            
+            let properties = components.value
+                .map { arg in "var \(arg): \(ctype)\n" }
+                .joined(separator: "\n\(spaces)")
+            
+            let code = "" +
+                "\(access) struct \(type.value) {" ¬
+                "    \(properties)" ¬
+                "}"
+            
+            print(code)
+        }
+        
         let c = CodeGenerator(indent: indent,
                               access: access,
                               type: type.value,
                               components: components.value)
         
-        print("\(access) extension \(type) {", terminator: "\n\n")
+        print("\(access) extension \(type.value) {", terminator: "\n\n")
         
-        let operators = ["+", "-", "*", "/"]
-        for i in operators {
-            c.gen(i)
+        for op in ["+", "-", "*", "/"] {
+            c.gen(op)
         }
         
         c.gen(prefix: "-")
         
-        for i in operators {
-            c.gen(mutating: i)
+        for op in ["+=", "-=", "*=", "/="] {
+            c.gen(mutating: op)
         }
         
-        for i in ["==", "<", ">"] {
-            c.gen(cmp: i)
+        for op in ["==", "<", ">"] {
+            c.gen(cmp: op)
         }
         
         print("}")
