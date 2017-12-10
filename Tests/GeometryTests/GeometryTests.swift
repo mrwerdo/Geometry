@@ -1,18 +1,19 @@
 import XCTest
 @testable import Geometry
 
-class GeometryTests: XCTestCase {
-
-	func testExample() {
-		// This is an example of a functional test case.
-		// Use XCTAssert and related functions to verify your tests produce the correct results.
-	}
-
-}
-extension GeometryTests {
-	static var allTests : [(String, (GeometryTests) -> () throws -> Void)] {
+extension TPointTests {
+	static var allTests : [(String, (TPointTests) -> () throws -> Void)] {
 		return [
-			("testExample", testExample),
+            ("testAddition", testAddition),
+            ("testSubtraction", testSubtraction),
+            ("testMultiplication", testMultiplication),
+            ("testDivision", testDivision),
+            ("testNegation", testNegation),
+            ("testEquality", testEquality),
+            ("testComparability", testComparability),
+            ("testHashability", testHashability),
+            ("testCanConvertToOtherVectors", testCanConvertToOtherVectors)
 		]
 	}
 }
+1
