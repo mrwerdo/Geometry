@@ -7,14 +7,18 @@ let package = Package(
         .executable(name: "synthesize", targets: ["ProtocolSynthesis"]),
         .library(name: "Geometry", targets: ["Geometry"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/jakeheis/SwiftCLI", from: "4.0.0")
+    ],
     targets: [
         .target(
             name: "ProtocolSynthesis",
-            dependencies: []
+            dependencies: ["SwiftCLI"]
         ),
         .target(
             name: "Geometry",
             dependencies: []
-        )
+        ),
+        .testTarget(name: "GeometryTests", dependencies: ["Geometry"])
     ]
 )
