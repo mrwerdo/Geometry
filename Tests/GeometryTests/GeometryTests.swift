@@ -16,4 +16,3 @@ extension TPointTests {
 		]
 	}
 }
-1
