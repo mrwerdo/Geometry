@@ -1,232 +1,7 @@
 import Foundation
 
-public protocol Countable : Comparable, Hashable {
-    static func +=(a: inout Self, b: Self)
-    static prefix func -(n: Self) -> Self
-    static func *=(a: inout Self, b: Self)
-    static func /=(a: inout Self, b: Self)
-    
-    static func +(a: Self, b: Self) -> Self
-    static func -(a: Self, b: Self) -> Self
-    static func *(a: Self, b: Self) -> Self
-    static func /(a: Self, b: Self) -> Self
-}
-
-public extension Countable {
-    
-    static func +=(a: inout Self, b: Self) {
-        a = a + b
-    }
-    
-    static func -=(a: inout Self, b: Self) {
-        a = a - b
-    }
-    
-    static func *=(a: inout Self, b: Self) {
-        a = a * b
-    }
-    
-    static func /=(a: inout Self, b: Self) {
-        a = a / b
-    }
-    
-    static func +(a: Self, b: Self) -> Self {
-        var sum = a
-        sum += b
-        return sum
-    }
-    
-    static func -(a: Self, b: Self) -> Self {
-        var sum = a
-        sum += -b
-        return sum
-    }
-    
-    static func *(a: Self, b: Self) -> Self {
-        var sum = a
-        sum *= b
-        return sum
-    }
-    
-    static func /(a: Self, b: Self) -> Self {
-        var sum = a
-        sum /= b
-        return sum
-    }
-}
-
-public protocol CoordinateIn2Dimensions : Countable {
-    associatedtype Measure : Countable
-    
-    var x: Measure { get set }
-    var y: Measure { get set }
-    var distanceFromOrigin: Measure { get }
-}
-
-public extension CoordinateIn2Dimensions {
-    
-    public var hashValue: Int {
-        let a = x.hashValue
-        let b = y.hashValue
-        return a ^ b + (b ^ a << 16)
-    }
-    
-    public var distanceFromOrigin: Measure {
-        return x*x + y*y
-    }
-    
-    static func +=(a: inout Self, b: Self) {
-        a.x += b.x
-        a.y += b.y
-    }
-    
-    static prefix func -(n: Self) -> Self {
-        var r = n
-        r.x = -n.x
-        r.y = -n.y
-        return r
-    }
-    
-    static func *=(a: inout Self, b: Self) {
-        a.x *= b.x
-        a.y *= b.y
-    }
-    
-    static func /=(a: inout Self, b: Self) {
-        a.x /= b.x
-        a.y /= b.y
-    }
-    
-    // TODO: Provide faster methods of the non-mutating countable operators.
-    static func <(a: Self, b: Self) -> Bool {
-        return a.distanceFromOrigin < b.distanceFromOrigin
-    }
-    
-    static func ==(a: Self, b: Self) -> Bool {
-        return a.x == b.x && a.y == b.y
-    }
-    
-    static func >(a: Self, b: Self) -> Bool {
-        return a.distanceFromOrigin > b.distanceFromOrigin
-    }
-    
-    static func *=(a: inout Self, b: Measure) {
-        a.x *= b
-        a.y *= b
-    }
-    
-    static func +=(a: inout Self, b: Measure)  {
-        a.x += b
-        a.y += b
-    }
-    static func -=(a: inout Self, b: Measure) {
-        a.x -= b
-        a.y -= b
-    }
-    static func /=(a: inout Self, b: Measure) {
-        a.x /= b
-        a.y /= b
-    }
-    
-    static func *(a: Self, b: Measure) -> Self {
-        var i = a
-        i *= b
-        return i
-    }
-    
-    static func *(a: Measure, b: Self) -> Self {
-        var i = b
-        i *= a
-        return i
-    }
-    
-    static func /(a: Self, b: Measure) -> Self {
-        var i = a
-        i /= b
-        return i
-    }
-    
-    static func /(a: Measure, b: Self) -> Self {
-        var i = b
-        i /= a
-        return i
-    }
-}
-
-public protocol CoordinateIn3Dimensions : CoordinateIn2Dimensions {
-    var z: Measure { get set }
-}
-
-// Note:    The operators in this extension must overload the operators in the
-//          extension `CoordinateIn2Dimensions` above.
-public extension CoordinateIn3Dimensions {
-    
-    public var hashValue: Int {
-        let a = x.hashValue
-        let b = y.hashValue
-        let c = z.hashValue
-        
-        return a ^ b + (b ^ c << 16) + (a ^ c << 32)
-    }
-    
-    public var distanceFromOrigin: Measure {
-        let a: Measure = x * x
-        let b: Measure = y * y
-        let c: Measure = z * z
-        return a + b + c
-        
-        // This was causing slower complie times.
-        // return x*x + y*y + z*z
-    }
-    
-    static func +=(a: inout Self, b: Self) {
-        a.x += b.x
-        a.y += b.y
-        a.z += b.z
-    }
-    
-    static prefix func -(n: Self) -> Self {
-        var r = n
-        r.x = -n.x
-        r.y = -n.y
-        r.z = -n.z
-        return r
-    }
-    
-    static func -=(a: inout Self, b: Self) {
-        a.x -= b.x
-        a.y -= b.y
-        a.z -= b.z
-    }
-    
-    static func *=(a: inout Self, b: Self) {
-        a.x *= b.x
-        a.y *= b.y
-        a.z *= b.z
-    }
-    
-    static func /=(a: inout Self, b: Self) {
-        a.x /= b.x
-        a.y /= b.y
-        a.z /= b.z
-    }
-    
-    static func <(a: Self, b: Self) -> Bool {
-        return a.distanceFromOrigin < b.distanceFromOrigin
-    }
-    
-    static func ==(a: Self, b: Self) -> Bool {
-        return a.x == b.x && a.y == b.y && a.z == b.z
-    }
-    
-    static func >(a: Self, b: Self) -> Bool {
-        return a.distanceFromOrigin > b.distanceFromOrigin
-    }
-}
-
-
-public protocol CountableArea : Countable {
-    associatedtype Measure: Countable
+public protocol CountableArea : VectorType {
+    associatedtype Measure: Numeric
     
     var width: Measure { get set }
     var height: Measure { get set }
@@ -234,47 +9,31 @@ public protocol CountableArea : Countable {
 }
 
 public extension CountableArea {
-    public var hashValue: Int {
-        let a = width.hashValue
-        let b = height.hashValue
-        return a ^ b + (b ^ a << 16)
+    static var components: [WritableKeyPath<Self, Measure>] {
+        return [\.width, \.height]
+    }
+
+    var hashValue: Int {
+        return "\(width), \(height)".hashValue
     }
     
     var area: Measure {
         return width * height
     }
     
-    static func ==(a: Self, b: Self) -> Bool {
+    public static func ==(a: Self, b: Self) -> Bool {
         return a.width == b.width && a.height == b.height
     }
+}
     
-    static func <(a: Self, b: Self) -> Bool {
+public extension CountableArea where Measure: Comparable {
+    public static func <(a: Self, b: Self) -> Bool {
         return a.area < b.area
     }
     
-    static func >(a: Self, b: Self) -> Bool {
+    public static func >(a: Self, b: Self) -> Bool {
         return a.area > b.area
     }
-    
-    static func +=(a: inout Self, b: Self) {
-        a.width += b.width
-        a.height += b.height
-    }
-    static prefix func -(a: Self) -> Self {
-        var r = a
-        r.width = -a.width
-        r.height = -a.height
-        return r
-    }
-    static func *=(a: inout Self, b: Self) {
-        a.width *= b.width
-        a.height *= b.height
-    }
-    static func /=(a: inout Self, b: Self) {
-        a.width /= b.width
-        a.height /= b.height
-    }
-    
 }
 
 public extension CountableArea where Measure == Int {
@@ -287,9 +46,8 @@ public extension CountableArea where Measure == Int {
     }
 }
 
-
-public protocol CountableVolume : Comparable {
-    associatedtype Measure: Countable
+public protocol CountableVolume : VectorType {
+    associatedtype Measure: Numeric
     
     var width: Measure { get set }
     var height: Measure { get set }
@@ -298,6 +56,10 @@ public protocol CountableVolume : Comparable {
 }
 
 public extension CountableVolume {
+    static var components: [WritableKeyPath<Self, Measure>] {
+        return [\.width, \.height, \.breadth]
+    }
+    
     var volume: Measure {
         return width * height * breadth
     }
@@ -306,6 +68,9 @@ public extension CountableVolume {
         return a.width == b.width && a.height == b.height && a.breadth == b.breadth
     }
     
+}
+
+public extension CountableVolume where Measure: Comparable {
     public static func <(a: Self, b: Self) -> Bool {
         return a.volume < b.volume
     }
@@ -334,13 +99,6 @@ public extension CountableVolume where Measure == Int {
 #endif
 
 // -----------------------------------------------------------------------------
-// MARK: - Countable Protocol Conformance
-// -----------------------------------------------------------------------------
-
-extension Int : Countable { }
-extension CGFloat : Countable { }
-
-// -----------------------------------------------------------------------------
 // MARK: - Coordinate Protocol Conformance
 // -----------------------------------------------------------------------------
 
@@ -357,11 +115,15 @@ extension CGPoint {
     }
 }
 
-
-extension CGPoint : CoordinateIn2Dimensions {
+extension CGPoint : VectorType {
+    public static var components: [WritableKeyPath<CGPoint, CGFloat>] {
+        return [\.x, \.y]
+    }
+    
     public init(x: CGFloat) {
         self.init(x: x, y: 0)
     }
+    
     public init(y: CGFloat) {
         self.init(x: 0, y: y)
     }
@@ -370,38 +132,22 @@ extension CGPoint : CoordinateIn2Dimensions {
         self.x = size.width
         self.y = size.height
     }
-}
 
-extension CGPoint {
-    
     init(_ v: CGVector) {
         x = v.dx
         y = v.dy
     }
     
     func distance(to p: CGPoint) -> CGFloat {
-        return sqrt((p - self).distanceFromOrigin)
+        let m = p - self
+        return sqrt(m.x * m.x + m.y * m.y)
     }
 }
 
 
-extension CGVector : CoordinateIn2Dimensions {
-    public var x: CGFloat {
-        get { return dx }
-        set { dx = newValue }
-    }
-    
-    public var y: CGFloat {
-        get { return dy }
-        set { dy = newValue }
-    }
-    
-    static func *(lhs: CGVector, rhs: CGFloat) -> CGVector {
-        return CGVector(dx: lhs.dx * rhs, dy: lhs.dy * rhs)
-    }
-    
-    static func *(lhs: CGFloat, rhs: CGVector) -> CGVector {
-        return CGVector(dx: rhs.dx * lhs, dy: rhs.dy * lhs)
+extension CGVector : VectorType {
+    public static var components: [WritableKeyPath<CGVector, CGFloat>] {
+        return [\.dx, \.dy]
     }
 }
 
@@ -409,27 +155,6 @@ extension CGSize : CountableArea {
     public init(square: CGFloat) {
         width = square
         height = square
-    }
-    
-    private init(_ dx: CGFloat = 0, _ dy: CGFloat = 0) {
-        self.width = dx
-        self.height = dy
-    }
-    
-    static func *(lhs: CGSize, rhs: CGFloat) -> CGSize {
-        return CGSize(lhs.width * rhs,lhs.height * rhs)
-    }
-    
-    static func *(lhs: CGFloat, rhs: CGSize) -> CGSize {
-        return CGSize(rhs.width * lhs, rhs.height * lhs)
-    }
-    
-    static func /(lhs: CGFloat, rhs: CGSize) -> CGSize {
-        return CGSize(rhs.width / lhs, rhs.height / lhs)
-    }
-    
-    static func /(lhs: CGSize, rhs: CGFloat) -> CGSize {
-        return CGSize(lhs.width / rhs, lhs.height / rhs)
     }
 }
 

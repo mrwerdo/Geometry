@@ -2,7 +2,8 @@
 // MARK: - Coordinate Concrete Types
 // -----------------------------------------------------------------------------
 
-public struct Point2D : CoordinateIn2Dimensions {
+public struct Point2D : VectorType {
+    
     public var x: Int
     public var y: Int
     
@@ -15,94 +16,41 @@ public struct Point2D : CoordinateIn2Dimensions {
         self.x = x
         self.y = y
     }
+    
+    static public var components: [WritableKeyPath<Point2D, Int>] {
+        return [\.x, \.y]
+    }
 }
 
-public struct Point3D : CoordinateIn3Dimensions, CustomStringConvertible {
-    public var x: Int
-    public var y: Int
-    public var z: Int
+public struct Point3D : VectorType {
+    public var x: Int = 0
+    public var y: Int = 0
+    public var z: Int = 0
     
-    public init() {
-        x = 0
-        y = 0
-        z = 0
+    public static var components: [WritableKeyPath<Point3D, Int>] {
+        return [\.x, \.y, \.z]
     }
+
+    public init() { }
     
     public init(x: Int = 0, y: Int = 0, z: Int = 0) {
         self.x = x
         self.y = y
         self.z = z
     }
+    
     public init(tuple: (x: Int, y: Int, z: Int)) {
         self.x = tuple.x
         self.y = tuple.y
         self.z = tuple.z
     }
-    
-    public var description: String {
-        return "(x: \(x), y: \(y), z: \(z))"
-    }
-    
-    public static func +(lhs: Point3D, rhs: Point3D) -> Point3D {
-        return Point3D(x: lhs.x + rhs.x,
-                       y: lhs.y + rhs.y,
-                       z: lhs.z + rhs.z
-        )
-    }
-    
-    public static func -(lhs: Point3D, rhs: Point3D) -> Point3D {
-        return Point3D(x: lhs.x - rhs.x,
-                       y: lhs.y - rhs.y,
-                       z: lhs.z - rhs.z
-        )
-    }
-    
-    public static func *(lhs: Point3D, rhs: Point3D) -> Point3D {
-        return Point3D(x: lhs.x * rhs.x,
-                       y: lhs.y * rhs.y,
-                       z: lhs.z * rhs.z
-        )
-    }
-    
-    public static func /(lhs: Point3D, rhs: Point3D) -> Point3D {
-        return Point3D(x: lhs.x / rhs.x,
-                       y: lhs.y / rhs.y,
-                       z: lhs.z / rhs.z
-        )
-    }
-    
-    public static func +=(lhs: inout Point3D, rhs: Point3D) {
-        lhs.x += rhs.x
-        lhs.y += rhs.y
-        lhs.z += rhs.z
-    }
-    
-    public static func -=(lhs: inout Point3D, rhs: Point3D) {
-        lhs.x -= rhs.x
-        lhs.y -= rhs.y
-        lhs.z -= rhs.z
-    }
-    
-    public static func *=(lhs: inout Point3D, rhs: Point3D) {
-        lhs.x *= rhs.x
-        lhs.y *= rhs.y
-        lhs.z *= rhs.z
-    }
-    
-    public static func /=(lhs: inout Point3D, rhs: Point3D) {
-        lhs.x /= rhs.x
-        lhs.y /= rhs.y
-        lhs.z /= rhs.z
-    }
-    
-    public static prefix func -(n: Point3D) -> Point3D {
-        return Point3D(x: -n.x, y: -n.y, z: -n.z)
-    }
 }
 
 public struct Size2D : CountableArea {
-    public var width: Int
-    public var height: Int
+    public var width: Int = 0
+    public var height: Int = 0
+    
+    public init() { }
     
     public init(width: Int, height: Int) {
         self.width = width
@@ -112,11 +60,13 @@ public struct Size2D : CountableArea {
 
 
 public struct Size3D : CountableVolume {
-    public var width: Int
-    public var height: Int
-    public var breadth: Int
+    public var width: Int = 0
+    public var height: Int = 0
+    public var breadth: Int = 0
     
-    public init(width: Int = 0, height: Int = 0, breadth: Int = 0) {
+    public init() { }
+    
+    public init(width: Int, height: Int, breadth: Int) {
         self.width = width
         self.height = height
         self.breadth = breadth
