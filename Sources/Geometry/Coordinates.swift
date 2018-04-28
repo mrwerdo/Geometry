@@ -129,13 +129,11 @@ extension CGPoint : VectorType {
     }
     
     public init(_ size: CGSize) {
-        self.x = size.width
-        self.y = size.height
+        self.init(x: size.width, y: size.height)
     }
 
     init(_ v: CGVector) {
-        x = v.dx
-        y = v.dy
+        self.init(x: v.dx, y: v.dy)
     }
     
     func distance(to p: CGPoint) -> CGFloat {
@@ -152,9 +150,8 @@ extension CGVector : VectorType {
 }
 
 extension CGSize : CountableArea {
-    public init(square: CGFloat) {
-        width = square
-        height = square
+    public init(square l: CGFloat) {
+        self.init(width: l, height: l)
     }
 }
 

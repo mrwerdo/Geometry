@@ -2,7 +2,7 @@
 
 import SwiftCLI
 
-enum Access: String, Keyable {
+enum Access: String, ConvertibleFromString {
     static func val(from: String) -> Access? {
         return Access(rawValue: from)
     }
