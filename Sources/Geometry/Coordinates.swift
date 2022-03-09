@@ -92,6 +92,8 @@ public extension CountableVolume where Measure == Int {
     }
 }
 
+#if !os(Linux)
+
 #if os(macOS)
     import AppKit
 #elseif os(iOS)
@@ -175,3 +177,4 @@ extension CGRect {
         return [a, b, c, d]
     }
 }
+#endif
