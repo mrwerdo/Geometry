@@ -21,17 +21,17 @@ public extension CountableArea {
         return width * height
     }
     
-    public static func ==(a: Self, b: Self) -> Bool {
+    static func ==(a: Self, b: Self) -> Bool {
         return a.width == b.width && a.height == b.height
     }
 }
     
 public extension CountableArea where Measure: Comparable {
-    public static func <(a: Self, b: Self) -> Bool {
+    static func <(a: Self, b: Self) -> Bool {
         return a.area < b.area
     }
     
-    public static func >(a: Self, b: Self) -> Bool {
+    static func >(a: Self, b: Self) -> Bool {
         return a.area > b.area
     }
 }
@@ -64,24 +64,24 @@ public extension CountableVolume {
         return width * height * breadth
     }
     
-    public static func ==(a: Self, b: Self) -> Bool {
+    static func ==(a: Self, b: Self) -> Bool {
         return a.width == b.width && a.height == b.height && a.breadth == b.breadth
     }
     
 }
 
 public extension CountableVolume where Measure: Comparable {
-    public static func <(a: Self, b: Self) -> Bool {
+    static func <(a: Self, b: Self) -> Bool {
         return a.volume < b.volume
     }
     
-    public static func >(a: Self, b: Self) -> Bool {
+    static func >(a: Self, b: Self) -> Bool {
         return a.volume > b.volume
     }
 }
 
 public extension CountableVolume where Measure == Int {
-    public func iterateCoordinates(apply: (Point3D) throws -> ()) rethrows {
+    func iterateCoordinates(apply: (Point3D) throws -> ()) rethrows {
         for x in 0..<width {
             for y in 0..<height {
                 for z in 0..<breadth {
@@ -91,6 +91,8 @@ public extension CountableVolume where Measure == Int {
         }
     }
 }
+
+#if !os(Linux)
 
 #if os(macOS)
     import AppKit
@@ -175,3 +177,4 @@ extension CGRect {
         return [a, b, c, d]
     }
 }
+#endif
